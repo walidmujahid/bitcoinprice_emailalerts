@@ -1,34 +1,30 @@
-"""Send daily Bitcoin price alerts to inbox."""
-from time import sleep
-
+"""Send Bitcoin price alerts to inbox."""
 from requests import get
-import schedule
 from gmail import GMail, Message
+
+from config import (COINDESK_CRYPTOPRICE, RECIPIENT,
+                    USERNAME, PASSWORD, SENDER_TITLE)
 
 
 def get_bitcoin_price():
     """Get current Bitcoin price in USD using Coindesk's real-time API"""
-    response = get('https://api.coindesk.com/v1/bpi/currentprice.json').json()
+    response = get(COINDESK_CRYPTOPRICE).json()
 
     return response['bpi']['USD']['rate']
 
 
-def send_email(recipient: str= 'walid.mujahid.dev@gmail.com'):
+def send_email():
     bitcoin_price = get_bitcoin_price()
 
     # enter actual password, otherwise, nothing happens.
-    gmail = GMail('Price Alert <walid.mujahid.open@gmail.com>',
-                  password='password')
+    gmail = GMail(f"{SENDER_TITLE} <{USERNAME}>",
+                  password=f'{PASSWORD}')
     message = Message(f'Bitcoin is at {bitcoin_price} right now!',
-                      to=recipient,
+                      to=RECIPIENT,
                       text=f'The current Bitcoin price is {bitcoin_price}.')
 
     gmail.send(message)
 
 
 if __name__ == '__main__':
-    schedule.every().day.at("06:30").do(send_email)
-
-    while True:
-        schedule.run_pending()
-        sleep(1)
+    send_email()
