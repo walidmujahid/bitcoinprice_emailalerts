@@ -1,6 +1,7 @@
 # Send emails with bitcoin price
 
 ## Project Dependencies
+[requirements.txt](requirements.txt)
 
 gmail-sender: https://github.com/paulchakravarti/gmail-sender
 
